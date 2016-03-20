@@ -12,7 +12,7 @@
         <audio id="backgroundMusic" src="[[soundTrack]]" autoplay="autoplay" loop="loop"></audio>
         <div id="gallery">
             <div class="album" data-jgallery-album-title="Album 1">
-                <template is="dom-repeat" items="[[imageData]]">
+                <template id="imageList" is="dom-repeat" items="[[imageData]]">
                     <a href="[[item.url]]">
                         <img src="[[item.thumb]]" alt="[[item.alt]]" />
                     </a>
@@ -40,19 +40,12 @@ Polymer({
 
         imageData: {
             type: Array,
-            value: [{
-                url: 'images/large/cola-float-1.jpg',
-                thumb: 'images/thumbs/cola-float-1.jpg',
-                alt: 'cola float 1'
-            }, {
-                url: 'images/large/cola-float-2.jpg',
-                thumb: 'images/thumbs/cola-float-2.jpg',
-                alt: 'cola float 2'
-            }, {
-                url: 'images/large/cola-float-3.jpg',
-                thumb: 'images/thumbs/cola-float-3.jpg',
-                alt: 'cola float 3'
-            }]
+            value: []
+        },
+
+        autoInit: {
+            type: Boolean,
+            value: false
         },
 
         galleryOptions: {
@@ -76,19 +69,33 @@ Polymer({
     },
 
     attached: function() {
-        this._initGallery()
+        if (this.autoInit)
+            this._initGallery()
     },
 
-    _initGallery: function() {
+    initGallery: function() {
+
+        if (!this.autoInit)
+            this.$.imageList.render();
+
+        $("#gallery").jGallery(this.galleryOptions);
+
+        this._eventHandlers();
+    },
+
+    _eventHandlers: function() {
 
         var component = this;
-        $("#gallery").jGallery(this.galleryOptions);
-        $(window).keypress(function(e) {
-            if (e.keyCode == 0 || e.keyCode == 32) {
-                component.isMusicOn == true ? component.$.backgroundMusic.pause() : component.$.backgroundMusic.play();
-                component.isMusicOn = !component.isMusicOn;
-            }
-        });
+
+        $(window)
+            .off('keypress')
+            .keypress(function(e) {
+                if (e.keyCode == 0 || e.keyCode == 32) {
+                    component.isMusicOn == true ? component.$.backgroundMusic.pause() : component.$.backgroundMusic.play();
+                    component.isMusicOn = !component.isMusicOn;
+                }
+            });
+
     }
 
 });
