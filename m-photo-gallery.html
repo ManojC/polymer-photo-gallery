@@ -9,7 +9,7 @@
         <style>
 
         </style>
-        <audio id="backgroundMusic" src="[[soundTrack]]" autoplay="autoplay" loop="loop"></audio>
+        <audio id="backgroundMusic" src="[[soundTrack]]" autoplay=[[isMusicOn]] loop="loop"></audio>
         <div id="gallery">
             <div class="album" data-jgallery-album-title="Album 1">
                 <template id="imageList" is="dom-repeat" items="[[imageData]]">
@@ -35,7 +35,12 @@ Polymer({
 
         isMusicOn: {
             type: Boolean,
-            value: true
+            value: false
+        },
+
+        musicButton: {
+            type: String,
+            value: ''
         },
 
         imageData: {
@@ -54,6 +59,7 @@ Polymer({
                 "transition": "rotateCubeLeftOut_rotateCubeLeftIn",
                 "transitionBackward": "rotateCubeRightOut_rotateCubeRightIn",
                 "transitionCols": "1",
+                "title": true,
                 "transitionRows": "1",
                 "thumbnailsPosition": "bottom",
                 "thumbType": "image",
@@ -87,15 +93,20 @@ Polymer({
 
         var component = this;
 
-        $(window)
-            .off('keypress')
-            .keypress(function(e) {
-                if (e.keyCode == 0 || e.keyCode == 32) {
-                    component.isMusicOn == true ? component.$.backgroundMusic.pause() : component.$.backgroundMusic.play();
+        if (component.musicButton) {
+            $('#' + component.musicButton)
+                .off('click')
+                .click(function(e) {
+                    if (component.isMusicOn == true) {
+                        this.textContent = "Play Music";
+                        component.$.backgroundMusic.pause();
+                    } else {
+                        this.textContent = "Pause Music";
+                        component.$.backgroundMusic.play();
+                    }
                     component.isMusicOn = !component.isMusicOn;
-                }
-            });
-
+                });
+        }
     }
 
 });
